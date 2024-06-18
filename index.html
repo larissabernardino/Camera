@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Câmera</title>
+    <link rel="stylesheet" type="text/css" href="css.css">
+</head>
+<body>
+    <video id="webCamera" autoplay></video>
+    <button id="captureButton">Capture a foto</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <a id="downloadLink" download="captured.jpg">Faça o download da foto</a>
+
+    <script>
+        function loadCamera() {
+            var video = document.querySelector("#webCamera");
+            video.setAttribute('autoplay', '');
+            video.setAttribute('muted', '');
+            video.setAttribute('playsinline', '');
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({audio: false, video: {facingMode: 'user'}})
+                .then(function(stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function(error) {
+                    alert("Oooopps... Falhou :'(");
+                });
+            } else {
+                alert("Desculpe, mas seu navegador não suporta a captura de vídeo.");
+            }
+        }
+
+        function capturePhoto() {
+            var canvas = document.getElementById('canvas');
+            var video = document.getElementById('webCamera');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+            var imgData = canvas.toDataURL('image/jpeg');
+            document.getElementById('downloadLink').href = imgData;
+        }
+
+        document.getElementById('captureButton').addEventListener('click', capturePhoto);
+
+        loadCamera();
+    </script>
+</body>
+</html>
